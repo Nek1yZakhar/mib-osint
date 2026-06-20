@@ -11,6 +11,30 @@ const activeKey = SUPABASE_ANON_KEY || urlParams.get('supabase_anon_key') || '';
 
 let supabaseClient = null;
 
+// HTML escaping helper to prevent Stored XSS
+function escapeHTML(str) {
+  if (!str) return '';
+  return str.replace(/[&<>'"]/g, 
+    tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag)
+  );
+}
+
+// URL protocol validator
+function sanitizeURL(url) {
+  if (!url) return '#';
+  const trimmed = url.trim();
+  if (trimmed.toLowerCase().startsWith('http://') || trimmed.toLowerCase().startsWith('https://')) {
+    return trimmed;
+  }
+  return '#';
+}
+
 // Date formatter helper (DD.MM.YYYY)
 function formatDate(dateString) {
   if (!dateString) return '—';
@@ -183,16 +207,19 @@ function renderArticleCard(article) {
   const importance = parseInt(article.importance || 1);
   
   if (importance >= 3 && article.summary_ru) {
-    summaryHTML = `<p class="article-summary">${article.summary_ru}</p>`;
+    summaryHTML = `<p class="article-summary">${escapeHTML(article.summary_ru)}</p>`;
   } else if (importance === 2 && article.summary_ru) {
     const firstSentence = getFirstSentence(article.summary_ru);
     if (firstSentence) {
-      summaryHTML = `<p class="article-summary">${firstSentence}</p>`;
+      summaryHTML = `<p class="article-summary">${escapeHTML(firstSentence)}</p>`;
     }
   }
 
   // Handle source domain extract if source_url is available
-  let domainLabel = article.source_name || 'Источник';
+  let domainLabel = escapeHTML(article.source_name || 'Источник');
+  const safeURL = sanitizeURL(article.url);
+  const titleText = escapeHTML(article.title_ru || article.title_original || 'Без названия');
+  const importanceReasonText = escapeHTML(article.importance_reason);
   
   return `
     <article class="article-card">
@@ -208,16 +235,16 @@ function renderArticleCard(article) {
         <span class="article-date">${formatDate(article.sent_at)}</span>
       </div>
       <h3 class="article-title">
-        <a href="${article.url}" target="_blank" rel="noopener noreferrer">
-          ${article.title_ru || article.title_original || 'Без названия'}
+        <a href="${safeURL}" target="_blank" rel="noopener noreferrer">
+          ${titleText}
         </a>
       </h3>
       ${summaryHTML}
       <div class="article-footer">
         <span class="article-source-link">
-          Источник: <a href="${article.url}" target="_blank" rel="noopener noreferrer">${domainLabel}</a>
+          Источник: <a href="${safeURL}" target="_blank" rel="noopener noreferrer">${domainLabel}</a>
         </span>
-        ${article.importance_reason ? `<span class="importance-reason-tip" title="${article.importance_reason}">👁️ Причина отбора</span>` : ''}
+        ${importanceReasonText ? `<span class="importance-reason-tip" title="${importanceReasonText}">👁️ Причина отбора</span>` : ''}
       </div>
     </article>
   `;
