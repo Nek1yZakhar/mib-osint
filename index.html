@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Автоматизированная система сбора и AI-анализа новостей по международной информационной безопасности. Ежедневный дайджест TOP-50 материалов по МИБ.">
+  <title>МИБ ОСИНТ — Мониторинг международной информационной безопасности</title>
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <!-- Fixed Orthogonal Grid Pattern -->
+  <div class="grid-bg"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-container">
+      <a href="#" class="logo">
+        <div class="logo-icon"></div>
+        <div class="logo-text">MIB <span>OSINT</span></div>
+      </a>
+      <a href="https://t.me/mib_osint" target="_blank" rel="noopener noreferrer" class="tg-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="tg-icon"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        Telegram Канал
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="hero-glow"></div>
+    <div class="container">
+      <h1>МИБ ОСИНТ — мониторинг международной<br><span>информационной безопасности</span></h1>
+      <p>Автоматизированная система сбора и AI-анализа новостей. Ежедневно — TOP-50 материалов по МИБ.</p>
+      
+      <!-- Skeletons during initialization -->
+      <div class="stats-row" id="hero-stats-skeleton">
+        <div class="stat-card">
+          <div class="shimmer-line short"></div>
+          <div class="shimmer-line"></div>
+        </div>
+        <div class="stat-card">
+          <div class="shimmer-line short"></div>
+          <div class="shimmer-line"></div>
+        </div>
+        <div class="stat-card">
+          <div class="shimmer-line"></div>
+        </div>
+      </div>
+
+      <!-- Real Counters (revealed when loaded) -->
+      <div class="stats-row hidden" id="hero-stats-row">
+        <div class="stat-card">
+          <div class="stat-val" id="hero-stat-articles">0</div>
+          <div class="stat-label">Всего статей в базе</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="hero-stat-digests">0</div>
+          <div class="stat-label">Опубликовано дайджестов</div>
+        </div>
+        <div class="stat-card stat-card-wide">
+          <div class="stat-label" style="margin-bottom: 4px;">Последнее обновление:</div>
+          <div class="stat-update-time" id="hero-stat-updated">—</div>
+        </div>
+      </div>
+      
+      <!-- Global Error Placeholder -->
+      <div class="error-placeholder" style="display: none;"></div>
+    </div>
+  </section>
+
+  <!-- Section 2: Latest Digest -->
+  <section class="content-section" id="latest-digest">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Свежий выпуск</span>
+        <h2 class="section-title">Последний дайджест (топ-10 материалов)</h2>
+      </div>
+
+      <div class="article-list" id="latest-digest-container">
+        <!-- Skeleton Loaders -->
+        <div class="shimmer-card loading-skeleton">
+          <div class="shimmer-line title"></div>
+          <div class="shimmer-line"></div>
+          <div class="shimmer-line short"></div>
+        </div>
+        <div class="shimmer-card loading-skeleton">
+          <div class="shimmer-line title"></div>
+          <div class="shimmer-line"></div>
+          <div class="shimmer-line short"></div>
+        </div>
+        <div class="shimmer-card loading-skeleton">
+          <div class="shimmer-line title"></div>
+          <div class="shimmer-line"></div>
+          <div class="shimmer-line short"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Process Stepper -->
+  <section class="content-section" id="process">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Автоматизация</span>
+        <h2 class="section-title">Схема работы системы</h2>
+      </div>
+
+      <div class="stepper-nav">
+        <!-- Step 1 -->
+        <div class="stepper-item">
+          <div class="stepper-indicator">🕔</div>
+          <div class="stepper-content">
+            <span class="stepper-time">05:00 МСК</span>
+            <h3 class="stepper-title">Сбор источников</h3>
+            <p class="stepper-desc">Специализированный парсер собирает ~185 статей в сутки из более чем 200 открытых ресурсов.</p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="stepper-item">
+          <div class="stepper-indicator">🤖</div>
+          <div class="stepper-content">
+            <span class="stepper-time">AI-Анализ</span>
+            <h3 class="stepper-title">Отбор и Кластеризация</h3>
+            <p class="stepper-desc">Модель E5-large фильтрует дубликаты, а LLM (qwen3-235b) оценивает важность и генерирует выжимки.</p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="stepper-item">
+          <div class="stepper-indicator">📨</div>
+          <div class="stepper-content">
+            <span class="stepper-time">05:45 МСК</span>
+            <h3 class="stepper-title">Публикация дайджеста</h3>
+            <p class="stepper-desc">Сгенерированный дайджест из 50 наиболее значимых материалов автоматически отправляется в Telegram.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Statistics Grid -->
+  <section class="content-section" id="statistics">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Мониторинг</span>
+        <h2 class="section-title">Системные показатели</h2>
+      </div>
+
+      <!-- Skeletons during initialization -->
+      <div class="stats-grid" id="stats-grid-skeleton">
+        <div class="shimmer-card"><div class="shimmer-line"></div></div>
+        <div class="shimmer-card"><div class="shimmer-line"></div></div>
+        <div class="shimmer-card"><div class="shimmer-line"></div></div>
+        <div class="shimmer-card"><div class="shimmer-line"></div></div>
+      </div>
+
+      <!-- Real stats -->
+      <div class="stats-grid hidden" id="stats-grid-row">
+        <!-- Metric 1 -->
+        <div class="stat-grid-card">
+          <div class="stat-grid-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="stat-grid-info">
+            <span class="stat-grid-val" id="card-stat-sources">0</span>
+            <span class="stat-grid-label">Источников охвачено</span>
+          </div>
+        </div>
+
+        <!-- Metric 2 -->
+        <div class="stat-grid-card">
+          <div class="stat-grid-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          </div>
+          <div class="stat-grid-info">
+            <span class="stat-grid-val" id="card-stat-week">0</span>
+            <span class="stat-grid-label">Статей за последние 7 дней</span>
+          </div>
+        </div>
+
+        <!-- Metric 3 -->
+        <div class="stat-grid-card">
+          <div class="stat-grid-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+          <div class="stat-grid-info">
+            <span class="stat-grid-val" id="card-stat-relevance">0%</span>
+            <span class="stat-grid-label">Релевантных материалов (TUNE-04)</span>
+          </div>
+        </div>
+
+        <!-- Metric 4 -->
+        <div class="stat-grid-card">
+          <div class="stat-grid-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          </div>
+          <div class="stat-grid-info">
+            <span class="stat-grid-val" id="card-stat-importance">0.00 / 5.0</span>
+            <span class="stat-grid-label">Средняя важность (importance)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: Archive -->
+  <section class="content-section" id="archive">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Архив публикаций</span>
+        <h2 class="section-title">Календарь дайджестов</h2>
+      </div>
+
+      <!-- Accordion list -->
+      <div class="accordion" id="archive-accordion">
+        <div class="shimmer-card loading-skeleton">
+          <div class="shimmer-line"></div>
+        </div>
+        <div class="shimmer-card loading-skeleton">
+          <div class="shimmer-line"></div>
+        </div>
+        <div class="shimmer-card loading-skeleton">
+          <div class="shimmer-line"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 МИБ ОСИНТ. Все права защищены.</p>
+      <p>Разработано для Школы Международной Информационной Безопасности Дипломатической академии МИД России.</p>
+      <p>Официальный канал: <a href="https://t.me/mib_osint" target="_blank" rel="noopener noreferrer">t.me/mib_osint</a></p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <!-- Supabase CDN Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Environment Variables -->
+  <script src="assets/env.js"></script>
+  <!-- Main Application Logic -->
+  <script src="assets/app.js"></script>
+</body>
+</html>
