@@ -119,12 +119,10 @@ header .nav-container {
   text-decoration: none;
 }
 
-.logo-icon {
-  width: 32px;
-  height: 32px;
-  background: var(--accent-color);
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  box-shadow: 0 0 15px var(--accent-glow);
+.logo-img {
+  height: 36px;
+  width: auto;
+  display: block;
 }
 
 .logo-text span {
