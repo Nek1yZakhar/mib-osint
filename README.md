@@ -1,5 +1,13 @@
 # MIB OSINT — Сайт-витрина дайджестов международной информационной безопасности
 
+![HTML5](https://img.shields.io/badge/HTML5-Vanilla_JS-orange)
+![CSS3](https://img.shields.io/badge/CSS3-Dark_Academic-blueviolet)
+![Supabase](https://img.shields.io/badge/DB-Supabase-3ECF8E)
+![Deploy](https://img.shields.io/badge/Deploy-Vercel-black)
+![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)
+
+🌐 **Живой сайт:** https://mib-osint.vercel.app
+
 Публичный фронтенд-сайт для отображения свежих выпусков дайджестов по Международной Информационной Безопасности (МИБ). Проект работает полностью на стороне клиента, запрашивая опубликованные материалы из Supabase.
 
 ## Стек технологий
@@ -17,10 +25,6 @@
 2. По умолчанию база данных будет недоступна из-за отсутствия ключей в файле `assets/env.js`.
 3. Для тестирования с реальными данными вы можете:
    - Временно прописать ваши `SUPABASE_URL` и `SUPABASE_ANON_KEY` в файл `assets/env.js`.
-   - **ИЛИ** открыть страницу, передав параметры в адресной строке:
-     ```
-     file:///C:/path/to/mib-osint/index.html?supabase_url=https://your-project.supabase.co&supabase_anon_key=your-key
-     ```
 
 *Внимание: никогда не отправляйте в репозиторий файл `assets/env.js` с заполненными боевыми ключами!*
 
