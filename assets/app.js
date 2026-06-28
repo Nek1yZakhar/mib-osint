@@ -96,20 +96,21 @@ function getFirstSentence(text) {
 }
 
 // Count-up animation helper
-function animateValue(obj, start, end, duration, isDate = false) {
+function animateValue(obj, start, end, duration, isDate = false, suffix = '', decimals = 0) {
   if (isDate) {
-    obj.innerHTML = end;
+    obj.innerHTML = end + suffix;
     return;
   }
   let startTimestamp = null;
   const step = (timestamp) => {
     if (!startTimestamp) startTimestamp = timestamp;
     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-    obj.innerHTML = Math.floor(progress * (end - start) + start);
+    const val = progress * (end - start) + start;
+    obj.innerHTML = val.toFixed(decimals) + suffix;
     if (progress < 1) {
       window.requestAnimationFrame(step);
     } else {
-      obj.innerHTML = end;
+      obj.innerHTML = end.toFixed(decimals) + suffix;
     }
   };
   window.requestAnimationFrame(step);
@@ -177,7 +178,7 @@ async function loadStats() {
 
     if (statSourcesEl) animateValue(statSourcesEl, 0, data.total_sources, 1000);
     if (statWeekEl) animateValue(statWeekEl, 0, data.articles_last_7_days, 1000);
-    if (statRelEl) animateValue(statRelEl, 0, 43, 1000); // 43% static as requested
+    if (statRelEl) animateValue(statRelEl, 0, parseFloat(data.relevance_rate || 0), 1000, false, '%', 1);
     if (statImportanceEl) {
       const avgImp = parseFloat(data.avg_importance || 0).toFixed(2);
       statImportanceEl.innerText = `${avgImp} / 5.0`;
