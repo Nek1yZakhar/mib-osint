@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://mib-osint.vercel.app/sitemap.xml
