@@ -187,33 +187,33 @@ async function loadStats() {
     // Set dynamic tooltips for the cards on hover (shows raw database stats vs published stats)
     const totalArticlesCard = document.getElementById('hero-stat-articles')?.closest('.stat-card');
     if (totalArticlesCard) {
-      totalArticlesCard.title = `Всего собрано и проанализировано сырых статей в базе данных: ${data.raw_total_articles}`;
+      totalArticlesCard.setAttribute('data-tooltip', `Всего собрано и проанализировано сырых статей в базе данных: ${data.raw_total_articles}`);
     }
 
     const totalDigestsCard = document.getElementById('hero-stat-digests')?.closest('.stat-card');
     if (totalDigestsCard) {
-      totalDigestsCard.title = `Количество ежедневных выпусков дайджестов, опубликованных в Telegram-канале`;
+      totalDigestsCard.setAttribute('data-tooltip', `Количество ежедневных выпусков дайджестов, опубликованных в Telegram-канале`);
     }
 
     const statSourcesCard = document.getElementById('card-stat-sources')?.closest('.stat-grid-card');
     if (statSourcesCard) {
-      statSourcesCard.title = `Всего источников с собранными материалами в базе данных: ${data.raw_total_sources} (из 219 настроенных в парсере)`;
+      statSourcesCard.setAttribute('data-tooltip', `Всего источников с собранными материалами в базе данных: ${data.raw_total_sources} (из 219 настроенных в парсере)`);
     }
 
     const statWeekCard = document.getElementById('card-stat-week')?.closest('.stat-grid-card');
     if (statWeekCard) {
-      statWeekCard.title = `Всего собрано и обработано сырых новостей за последние 7 дней: ${data.raw_articles_last_7_days}`;
+      statWeekCard.setAttribute('data-tooltip', `Всего собрано и обработано сырых новостей за последние 7 дней: ${data.raw_articles_last_7_days}`);
     }
 
     const statRelCard = document.getElementById('card-stat-relevance')?.closest('.stat-grid-card');
     if (statRelCard) {
       const relevantCount = data.total_processed - data.total_filtered;
-      statRelCard.title = `Из ${data.total_processed} проанализированных статей ${relevantCount} признаны релевантными МИБ (остальные ${data.total_filtered} отфильтрованы локальной моделью E5 и LLM как шум)`;
+      statRelCard.setAttribute('data-tooltip', `Из ${data.total_processed} проанализированных статей ${relevantCount} признаны релевантными МИБ (остальные ${data.total_filtered} отфильтрованы локальной моделью E5 и LLM как шум)`);
     }
 
     const statImportanceCard = document.getElementById('card-stat-importance')?.closest('.stat-grid-card');
     if (statImportanceCard) {
-      statImportanceCard.title = `Средняя экспертная оценка важности (от 1 до 5) по шкале МИБ только для опубликованных статей-лидеров`;
+      statImportanceCard.setAttribute('data-tooltip', `Средняя экспертная оценка важности (от 1 до 5) по шкале МИБ только для опубликованных статей-лидеров`);
     }
 
     // Hide skeleton of stats
@@ -258,7 +258,7 @@ function renderArticleCard(article) {
     <article class="article-card">
       <div class="article-card-header">
         <div class="article-badges">
-          <span class="score-badge ${badgeInfo.class}" title="Composite Score: ${(parseFloat(article.composite_score || 0)).toFixed(3)}">
+          <span class="score-badge ${badgeInfo.class}" data-tooltip="Composite Score: ${(parseFloat(article.composite_score || 0)).toFixed(3)}">
             <span class="badge-dot">${badgeInfo.emoji}</span> ${badgeInfo.label}
           </span>
           <span class="category-badge ${catInfo.class}">
@@ -277,7 +277,7 @@ function renderArticleCard(article) {
         <span class="article-source-link">
           Источник: <a href="${safeURL}" target="_blank" rel="noopener noreferrer">${domainLabel}</a>
         </span>
-        ${importanceReasonText ? `<span class="importance-reason-tip" title="${importanceReasonText}">👁️ Причина отбора</span>` : ''}
+        ${importanceReasonText ? `<span class="importance-reason-tip" data-tooltip="${importanceReasonText}">👁️ Причина отбора</span>` : ''}
       </div>
     </article>
   `;
@@ -451,8 +451,45 @@ async function loadArchiveArticles(dateVal) {
   }
 }
 
+// Initialize Custom Premium Tooltips
+function initTooltips() {
+  const tooltipEl = document.createElement('div');
+  tooltipEl.className = 'custom-tooltip';
+  document.body.appendChild(tooltipEl);
+
+  document.body.addEventListener('mouseover', (e) => {
+    const target = e.target.closest('[data-tooltip]');
+    if (!target) return;
+
+    const text = target.getAttribute('data-tooltip');
+    if (!text) return;
+
+    tooltipEl.innerHTML = text;
+    tooltipEl.classList.add('visible');
+
+    const updatePosition = () => {
+      const rect = target.getBoundingClientRect();
+      const top = rect.top + window.scrollY - tooltipEl.offsetHeight - 8;
+      const left = rect.left + window.scrollX + (rect.width - tooltipEl.offsetWidth) / 2;
+      
+      tooltipEl.style.top = `${top}px`;
+      tooltipEl.style.left = `${left}px`;
+    };
+
+    updatePosition();
+    setTimeout(updatePosition, 0);
+
+    const onMouseLeave = () => {
+      tooltipEl.classList.remove('visible');
+      target.removeEventListener('mouseleave', onMouseLeave);
+    };
+    target.addEventListener('mouseleave', onMouseLeave);
+  });
+}
+
 // Start app once DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
+  initTooltips();
   if (initSupabase()) {
     loadStats();
     loadLatestDigest();
