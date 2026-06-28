@@ -911,3 +911,55 @@ footer a:hover {
   border-color: rgba(22, 27, 34, 0.98) transparent transparent transparent;
 }
 
+/* Developer Social Links & Portfolio Styling */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-social-link {
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, transform 0.2s;
+  text-decoration: none;
+}
+
+.nav-social-link:hover {
+  color: var(--accent-color);
+  transform: translateY(-1px);
+}
+
+.footer-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.developer-credit {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.developer-credit a {
+  color: var(--accent-color) !important;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(79, 152, 163, 0.4) !important;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.developer-credit a:hover {
+  color: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+}
+
+.school-credit, .channel-credit {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
