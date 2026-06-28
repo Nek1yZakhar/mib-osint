@@ -184,6 +184,38 @@ async function loadStats() {
       statImportanceEl.innerText = `${avgImp} / 5.0`;
     }
 
+    // Set dynamic tooltips for the cards on hover (shows raw database stats vs published stats)
+    const totalArticlesCard = document.getElementById('hero-stat-articles')?.closest('.stat-card');
+    if (totalArticlesCard) {
+      totalArticlesCard.title = `Всего собрано и проанализировано сырых статей в базе данных: ${data.raw_total_articles}`;
+    }
+
+    const totalDigestsCard = document.getElementById('hero-stat-digests')?.closest('.stat-card');
+    if (totalDigestsCard) {
+      totalDigestsCard.title = `Количество ежедневных выпусков дайджестов, опубликованных в Telegram-канале`;
+    }
+
+    const statSourcesCard = document.getElementById('card-stat-sources')?.closest('.stat-grid-card');
+    if (statSourcesCard) {
+      statSourcesCard.title = `Всего источников с собранными материалами в базе данных: ${data.raw_total_sources} (из 219 настроенных в парсере)`;
+    }
+
+    const statWeekCard = document.getElementById('card-stat-week')?.closest('.stat-grid-card');
+    if (statWeekCard) {
+      statWeekCard.title = `Всего собрано и обработано сырых новостей за последние 7 дней: ${data.raw_articles_last_7_days}`;
+    }
+
+    const statRelCard = document.getElementById('card-stat-relevance')?.closest('.stat-grid-card');
+    if (statRelCard) {
+      const relevantCount = data.total_processed - data.total_filtered;
+      statRelCard.title = `Из ${data.total_processed} проанализированных статей ${relevantCount} признаны релевантными МИБ (остальные ${data.total_filtered} отфильтрованы локальной моделью E5 и LLM как шум)`;
+    }
+
+    const statImportanceCard = document.getElementById('card-stat-importance')?.closest('.stat-grid-card');
+    if (statImportanceCard) {
+      statImportanceCard.title = `Средняя экспертная оценка важности (от 1 до 5) по шкале МИБ только для опубликованных статей-лидеров`;
+    }
+
     // Hide skeleton of stats
     document.getElementById('hero-stats-skeleton')?.remove();
     document.getElementById('stats-grid-skeleton')?.remove();
