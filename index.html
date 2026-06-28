@@ -54,11 +54,11 @@
 
       <!-- Real Counters (revealed when loaded) -->
       <div class="stats-row hidden" id="hero-stats-row">
-        <div class="stat-card">
+        <div class="stat-card" data-inspector="articles">
           <div class="stat-val" id="hero-stat-articles">0</div>
           <div class="stat-label">Всего статей в базе</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" data-inspector="digests">
           <div class="stat-val" id="hero-stat-digests">0</div>
           <div class="stat-label">Опубликовано дайджестов</div>
         </div>
@@ -161,48 +161,61 @@
       </div>
 
       <!-- Real stats -->
-      <div class="stats-grid hidden" id="stats-grid-row">
-        <!-- Metric 1 -->
-        <div class="stat-grid-card">
-          <div class="stat-grid-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <div class="stats-dashboard-layout hidden" id="stats-dashboard-row">
+        <div class="stats-grid" id="stats-grid-row">
+          <!-- Metric 1 -->
+          <div class="stat-grid-card" data-inspector="sources">
+            <div class="stat-grid-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="stat-grid-info">
+              <span class="stat-grid-val" id="card-stat-sources">0</span>
+              <span class="stat-grid-label">Источников охвачено</span>
+            </div>
           </div>
-          <div class="stat-grid-info">
-            <span class="stat-grid-val" id="card-stat-sources">0</span>
-            <span class="stat-grid-label">Источников охвачено</span>
+
+          <!-- Metric 2 -->
+          <div class="stat-grid-card" data-inspector="week">
+            <div class="stat-grid-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </div>
+            <div class="stat-grid-info">
+              <span class="stat-grid-val" id="card-stat-week">0</span>
+              <span class="stat-grid-label">Статей за последние 7 дней</span>
+            </div>
+          </div>
+
+          <!-- Metric 3 -->
+          <div class="stat-grid-card" data-inspector="relevance">
+            <div class="stat-grid-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div class="stat-grid-info">
+              <span class="stat-grid-val" id="card-stat-relevance">0%</span>
+              <span class="stat-grid-label">Доля релевантных (TUNE-04)</span>
+            </div>
+          </div>
+
+          <!-- Metric 4 -->
+          <div class="stat-grid-card" data-inspector="importance">
+            <div class="stat-grid-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            </div>
+            <div class="stat-grid-info">
+              <span class="stat-grid-val" id="card-stat-importance">0.00 / 5.0</span>
+              <span class="stat-grid-label">Средняя важность (importance)</span>
+            </div>
           </div>
         </div>
 
-        <!-- Metric 2 -->
-        <div class="stat-grid-card">
-          <div class="stat-grid-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <!-- Metric Inspector Board -->
+        <div class="stats-inspector" id="stats-inspector">
+          <div class="inspector-header">
+            <span class="inspector-icon">🔍</span>
+            <h3 class="inspector-title">Инспектор показателей</h3>
           </div>
-          <div class="stat-grid-info">
-            <span class="stat-grid-val" id="card-stat-week">0</span>
-            <span class="stat-grid-label">Статей за последние 7 дней</span>
-          </div>
-        </div>
-
-        <!-- Metric 3 -->
-        <div class="stat-grid-card">
-          <div class="stat-grid-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          </div>
-          <div class="stat-grid-info">
-            <span class="stat-grid-val" id="card-stat-relevance">0%</span>
-            <span class="stat-grid-label">Доля релевантных (TUNE-04)</span>
-          </div>
-        </div>
-
-        <!-- Metric 4 -->
-        <div class="stat-grid-card">
-          <div class="stat-grid-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-          </div>
-          <div class="stat-grid-info">
-            <span class="stat-grid-val" id="card-stat-importance">0.00 / 5.0</span>
-            <span class="stat-grid-label">Средняя важность (importance)</span>
+          <div class="inspector-body" id="inspector-content">
+            <p class="inspector-placeholder">Наведите на любой показатель системы (включая верхние карточки), чтобы увидеть подробную аналитику и структуру данных в реальном времени.</p>
           </div>
         </div>
       </div>
