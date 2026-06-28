@@ -184,14 +184,43 @@ async function loadStats() {
       statImportanceEl.innerText = `${avgImp} / 5.0`;
     }
 
-    // Store stats globally for the inspector to read
-    window.statsData = data;
+    // Set dynamic tooltips for the cards on hover (shows raw database stats vs published stats)
+    const totalArticlesCard = document.getElementById('hero-stat-articles')?.closest('.stat-card');
+    if (totalArticlesCard) {
+      totalArticlesCard.setAttribute('data-tooltip', `Всего собрано и проанализировано сырых статей в базе данных: ${data.raw_total_articles}`);
+    }
+
+    const totalDigestsCard = document.getElementById('hero-stat-digests')?.closest('.stat-card');
+    if (totalDigestsCard) {
+      totalDigestsCard.setAttribute('data-tooltip', `Количество ежедневных выпусков дайджестов, опубликованных в Telegram-канале`);
+    }
+
+    const statSourcesCard = document.getElementById('card-stat-sources')?.closest('.stat-grid-card');
+    if (statSourcesCard) {
+      statSourcesCard.setAttribute('data-tooltip', `Всего источников с собранными материалами в базе данных: ${data.raw_total_sources} (из 219 настроенных в парсере)`);
+    }
+
+    const statWeekCard = document.getElementById('card-stat-week')?.closest('.stat-grid-card');
+    if (statWeekCard) {
+      statWeekCard.setAttribute('data-tooltip', `Всего собрано и обработано сырых новостей за последние 7 дней: ${data.raw_articles_last_7_days}`);
+    }
+
+    const statRelCard = document.getElementById('card-stat-relevance')?.closest('.stat-grid-card');
+    if (statRelCard) {
+      const relevantCount = data.total_processed - data.total_filtered;
+      statRelCard.setAttribute('data-tooltip', `Из ${data.total_processed} проанализированных статей ${relevantCount} признаны релевантными МИБ (остальные ${data.total_filtered} отфильтрованы локальной моделью E5 и LLM как шум)`);
+    }
+
+    const statImportanceCard = document.getElementById('card-stat-importance')?.closest('.stat-grid-card');
+    if (statImportanceCard) {
+      statImportanceCard.setAttribute('data-tooltip', `Средняя экспертная оценка важности (от 1 до 5) по шкале МИБ только для опубликованных статей-лидеров`);
+    }
 
     // Hide skeleton of stats
     document.getElementById('hero-stats-skeleton')?.remove();
     document.getElementById('stats-grid-skeleton')?.remove();
     document.getElementById('hero-stats-row')?.classList.remove('hidden');
-    document.getElementById('stats-dashboard-row')?.classList.remove('hidden');
+    document.getElementById('stats-grid-row')?.classList.remove('hidden');
   } catch (err) {
     console.error('Failed to load stats:', err);
     showErrorState('Ошибка при получении системной статистики из базы данных.');
@@ -422,7 +451,7 @@ async function loadArchiveArticles(dateVal) {
   }
 }
 
-// Initialize Custom Premium Tooltips
+// Initialize Custom Premium Tooltips with auto-positioning left/right/top and styled arrows
 function initTooltips() {
   const tooltipEl = document.createElement('div');
   tooltipEl.className = 'custom-tooltip';
@@ -436,194 +465,61 @@ function initTooltips() {
     if (!text) return;
 
     tooltipEl.innerHTML = text;
+    tooltipEl.classList.remove('tooltip-left', 'tooltip-right', 'tooltip-top');
     tooltipEl.classList.add('visible');
 
     const updatePosition = () => {
       const rect = target.getBoundingClientRect();
-      const top = rect.top + window.scrollY - tooltipEl.offsetHeight - 8;
-      const left = rect.left + window.scrollX + (rect.width - tooltipEl.offsetWidth) / 2;
+      const isMobile = window.innerWidth < 768;
       
-      tooltipEl.style.top = `${top}px`;
-      tooltipEl.style.left = `${left}px`;
+      const positionTop = () => {
+        const top = rect.top + window.scrollY - tooltipEl.offsetHeight - 8;
+        const left = rect.left + window.scrollX + (rect.width - tooltipEl.offsetWidth) / 2;
+        tooltipEl.style.top = `${top}px`;
+        tooltipEl.style.left = `${left}px`;
+        tooltipEl.classList.add('tooltip-top');
+      };
+
+      if (isMobile) {
+        positionTop();
+      } else {
+        const screenCenterX = window.innerWidth / 2;
+        const targetCenterX = rect.left + rect.width / 2;
+        const tooltipWidth = tooltipEl.offsetWidth;
+        const spaceOnRight = window.innerWidth - rect.right;
+        const spaceOnLeft = rect.left;
+
+        if (targetCenterX < screenCenterX) {
+          // Place on right
+          if (spaceOnRight < tooltipWidth + 24) {
+            positionTop();
+          } else {
+            const top = rect.top + window.scrollY + (rect.height - tooltipEl.offsetHeight) / 2;
+            const left = rect.right + window.scrollX + 12;
+            tooltipEl.style.top = `${top}px`;
+            tooltipEl.style.left = `${left}px`;
+            tooltipEl.classList.add('tooltip-right');
+          }
+        } else {
+          // Place on left
+          if (spaceOnLeft < tooltipWidth + 24) {
+            positionTop();
+          } else {
+            const top = rect.top + window.scrollY + (rect.height - tooltipEl.offsetHeight) / 2;
+            const left = rect.left + window.scrollX - tooltipWidth - 12;
+            tooltipEl.style.top = `${top}px`;
+            tooltipEl.style.left = `${left}px`;
+            tooltipEl.classList.add('tooltip-left');
+          }
+        }
+      }
     };
 
     updatePosition();
     setTimeout(updatePosition, 0);
 
     const onMouseLeave = () => {
-      tooltipEl.classList.remove('visible');
-      target.removeEventListener('mouseleave', onMouseLeave);
-    };
-    target.addEventListener('mouseleave', onMouseLeave);
-  });
-}
-
-// Update Inspector panel contents dynamically
-function updateInspector(type) {
-  const contentEl = document.getElementById('inspector-content');
-  const containerEl = document.getElementById('stats-inspector');
-  if (!contentEl || !window.statsData) return;
-  
-  const data = window.statsData;
-  let html = '';
-  let title = 'Инспектор показателей';
-  let icon = '🔍';
-  
-  containerEl?.classList.add('highlight');
-  
-  switch (type) {
-    case 'articles':
-      icon = '🗂️';
-      title = 'Всего статей в базе';
-      html = `
-        <span class="inspector-badge">Архив</span>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Опубликовано (в дайджестах):</span>
-          <span class="inspector-metric-value">${data.total_articles}</span>
-        </div>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Всего собрано (сырых):</span>
-          <span class="inspector-metric-value">${data.raw_total_articles}</span>
-        </div>
-        <p class="inspector-desc">Для публичной демонстрации на витрине выводятся только статьи, прошедшие сито фильтрации и вошедшие в опубликованные Telegram-дайджесты. Сырая база данных содержит абсолютно все собранные парсером материалы до очистки.</p>
-      `;
-      break;
-      
-    case 'digests':
-      icon = '📅';
-      title = 'Опубликовано дайджестов';
-      html = `
-        <span class="inspector-badge">Статистика выпусков</span>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Всего выпусков (дней):</span>
-          <span class="inspector-metric-value">${data.total_digests}</span>
-        </div>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Последний выпуск:</span>
-          <span class="inspector-metric-value" style="font-size: 0.825rem;">${formatDate(data.last_updated)}</span>
-        </div>
-        <p class="inspector-desc">Количество уникальных календарных дней, за которые система сгенерировала и успешно опубликовала сводные дайджесты лучших МИБ-материалов в Telegram-канал.</p>
-      `;
-      break;
-      
-    case 'sources':
-      icon = '🔌';
-      title = 'Источников охвачено';
-      html = `
-        <span class="inspector-badge">Провайдеры данных</span>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Активных в дайджестах:</span>
-          <span class="inspector-metric-value">${data.total_sources}</span>
-        </div>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Всего с публикациями:</span>
-          <span class="inspector-metric-value">${data.raw_total_sources}</span>
-        </div>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Настроено в парсере:</span>
-          <span class="inspector-metric-value">219</span>
-        </div>
-        <p class="inspector-desc">Показывает число уникальных веб-сайтов и RSS-фидов, статьи из которых успешно прошли фильтрацию и попали в дайджесты. Всего парсер регулярно опрашивает 219 профильных ресурсов.</p>
-      `;
-      break;
-      
-    case 'week':
-      icon = '⏳';
-      title = 'За последние 7 дней';
-      html = `
-        <span class="inspector-badge">Недельная динамика</span>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Опубликовано статей:</span>
-          <span class="inspector-metric-value">${data.articles_last_7_days}</span>
-        </div>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Всего спарсено статей:</span>
-          <span class="inspector-metric-value">${data.raw_articles_last_7_days}</span>
-        </div>
-        <p class="inspector-desc">Динамика входящего потока информации за последнюю неделю. Демонстрирует интенсивность публикационной активности по теме кибербезопасности.</p>
-      `;
-      break;
-      
-    case 'relevance':
-      icon = '🎯';
-      title = 'Доля релевантных';
-      const relevantCount = data.total_processed - data.total_filtered;
-      html = `
-        <span class="inspector-badge">Точность (TUNE-04)</span>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Процент релевантности:</span>
-          <span class="inspector-metric-value">${parseFloat(data.relevance_rate || 0).toFixed(1)}%</span>
-        </div>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Релевантных материалов:</span>
-          <span class="inspector-metric-value">${relevantCount}</span>
-        </div>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Отсеяно (как шум):</span>
-          <span class="inspector-metric-value">${data.total_filtered}</span>
-        </div>
-        <p class="inspector-desc">Эффективность фильтрации. Система отсекает около 76.4% оффтопа (коммерческие утечки, CVE, ИТ-рынок) с помощью локальной модели эмбеддингов E5 и большой LLM, оставляя только 23.6% чистой аналитики по МИБ.</p>
-      `;
-      break;
-      
-    case 'importance':
-      icon = '⭐';
-      title = 'Средняя важность';
-      html = `
-        <span class="inspector-badge">Качество контента</span>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Опубликованный ТОП-50:</span>
-          <span class="inspector-metric-value">${parseFloat(data.avg_importance || 0).toFixed(2)} / 5.0</span>
-        </div>
-        <div class="inspector-metric-row">
-          <span class="inspector-metric-label">Все статьи базы:</span>
-          <span class="inspector-metric-value">1.78 / 5.0</span>
-        </div>
-        <p class="inspector-desc">Средний экспертный балл важности по шкале МИБ (1-5). Публикуемые лидеры кластеров имеют средний приоритет 3.77 (между средним и высоким), тогда как вся сырая база имеет оценку 1.78 (низкая важность).</p>
-      `;
-      break;
-      
-    default:
-      resetInspector();
-      return;
-  }
-  
-  const titleEl = containerEl?.querySelector('.inspector-title');
-  const iconEl = containerEl?.querySelector('.inspector-icon');
-  if (titleEl) titleEl.innerText = title;
-  if (iconEl) iconEl.innerText = icon;
-  contentEl.innerHTML = html;
-}
-
-// Reset Inspector panel to default state
-function resetInspector() {
-  const contentEl = document.getElementById('inspector-content');
-  const containerEl = document.getElementById('stats-inspector');
-  if (!contentEl) return;
-  
-  containerEl?.classList.remove('highlight');
-  
-  const titleEl = containerEl?.querySelector('.inspector-title');
-  const iconEl = containerEl?.querySelector('.inspector-icon');
-  if (titleEl) titleEl.innerText = 'Инспектор показателей';
-  if (iconEl) iconEl.innerText = '🔍';
-  
-  contentEl.innerHTML = `
-    <p class="inspector-placeholder">Наведите на любой показатель системы (включая верхние карточки), чтобы увидеть подробную аналитику и структуру данных в реальном времени.</p>
-  `;
-}
-
-// Initialize mouse hover listeners for the inspector layout
-function initInspector() {
-  document.body.addEventListener('mouseover', (e) => {
-    const target = e.target.closest('[data-inspector]');
-    if (!target) return;
-    
-    const type = target.getAttribute('data-inspector');
-    updateInspector(type);
-    
-    const onMouseLeave = () => {
-      resetInspector();
+      tooltipEl.classList.remove('visible', 'tooltip-left', 'tooltip-right', 'tooltip-top');
       target.removeEventListener('mouseleave', onMouseLeave);
     };
     target.addEventListener('mouseleave', onMouseLeave);
@@ -633,7 +529,6 @@ function initInspector() {
 // Start app once DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
   initTooltips();
-  initInspector();
   if (initSupabase()) {
     loadStats();
     loadLatestDigest();
